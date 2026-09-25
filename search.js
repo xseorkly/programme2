@@ -3,6 +3,32 @@ const $=id=>document.getElementById(id);
 const q=$('q'),level=$('level'),type=$('type'),source=$('source'),results=$('results'),count=$('count');
 const modal=$('detailsModal'),modalTitle=$('modalTitle'),modalText=$('modalText'),modalLinks=$('modalLinks'),modalClose=$('modalClose');
 let DATA=[];
+const EXTRA_RESOURCES=[
+  {
+    id:'eduvox-ia-projet-3e-2026',
+    title:'Assistant vocal EDUVOX — réaliser le support avec l’IA comme aide dans la démarche de projet',
+    type:'Séquences',
+    level:'3e',
+    source:'RNR Éduscol STI',
+    status:'national',
+    summary:'Nouvelle ressource publiée le 23 septembre 2026 : deux séquences de 3e autour de la conception du support d’un assistant vocal EDUVOX, avec l’IA utilisée comme aide au cours des différentes tâches du projet.',
+    details:'Sébastien Ponsot, enseignant de technologie dans l’académie de Dijon, propose un projet composé de deux séquences pour la classe de 3e. La ressource développe les compétences liées à la conception d’un objet technique, en suivant les grandes étapes de la démarche de projet et en mobilisant l’intelligence artificielle comme aide pour réaliser certaines tâches. À exploiter notamment dans les entrées CCRI, IA, conception, réalisation et démarche de projet.',
+    tags:['EDUVOX','assistant vocal','IA','intelligence artificielle','3e','CCRI','démarche de projet','conception','réalisation','RNR','23 septembre 2026'],
+    url:'https://sti.eduscol.education.fr/ressources_pedagogiques/assistant-vocal-comment-realiser-le-support-de-leduvox-en-utilisant-lia'
+  },
+  {
+    id:'worldskills-challenge-inter-colleges-2026-2027',
+    title:'WorldSkills France — Challenge inter-collèges 2026-2027 : découvrir les métiers autrement',
+    type:'Projet / orientation',
+    level:'Cycle 4',
+    source:'Académie de Bordeaux / WorldSkills France',
+    status:'academic',
+    summary:'Challenge ouvert aux élèves de 5e, 4e, 3e et 3e prépa-métiers, organisé autour de cinq séances et des thématiques France 2030 : mieux produire, mieux vivre, mieux comprendre le monde.',
+    details:'Le Challenge Inter-collèges WorldSkills 2026-2027 est présenté par l’académie de Bordeaux comme cohérent avec les programmes du cycle 4. Il permet d’articuler technologie, découverte des métiers et orientation. Les élèves suivent cinq séances de 50 minutes, accessibles de manière asynchrone, d’octobre 2026 à mars 2027. La ressource peut servir pour des projets interdisciplinaires, l’ouverture sur les métiers et les parcours d’orientation.',
+    tags:['WorldSkills','orientation','métiers','cycle 4','5e','4e','3e','France 2030','projet','challenge inter-collèges','2026-2027'],
+    url:'https://ent2d.ac-bordeaux.fr/disciplines/sti-college/2026/09/10/worldskills-france-challenge-inter-colleges-decouvrir-les-metiers-autrement/'
+  }
+];
 const BASE='https://xseorkly.github.io/programme/';
 const norm=s=>(s||'').toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const esc=s=>(s||'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -19,6 +45,6 @@ function closeModal(){modal.classList.remove('show');modal.setAttribute('aria-hi
 if(modalClose)modalClose.onclick=closeModal;if(modal)modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
 function readParams(){const p=new URLSearchParams(location.search);if(p.get('q'))q.value=p.get('q');if(p.get('level'))level.value=p.get('level');if(p.get('type'))type.value=p.get('type');if(p.get('source'))source.value=p.get('source')}
 function syncUrl(){const p=new URLSearchParams();if(q.value)p.set('q',q.value);if(level.value)p.set('level',level.value);if(type.value)p.set('type',type.value);if(source.value)p.set('source',source.value);history.replaceState({},'',location.pathname+(p.toString()?'?'+p.toString():''))}
-async function init(){try{const res=await fetch('/programme/',{cache:'no-store'});if(!res.ok)throw new Error(`HTTP ${res.status}`);DATA=extractData(await res.text());addOptions(level,[...new Set(DATA.map(x=>x.level))]);addOptions(type,[...new Set(DATA.map(x=>x.type))]);addOptions(source,[...new Set(DATA.map(x=>x.source))]);readParams();[q,level,type,source].forEach(el=>el.addEventListener(el===q?'input':'change',()=>{syncUrl();render()}));$('reset').onclick=()=>{q.value='';level.value='';type.value='';source.value='';syncUrl();render();q.focus()};document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{q.value=b.dataset.q;syncUrl();render()});render()}catch(err){count.textContent='Corpus indisponible';results.innerHTML=`<div class="empty"><b>Le corpus n'a pas pu être chargé.</b><br>${esc(err.message)}<br><br><a href="https://xseorkly.github.io/programme/">Ouvrir le portail principal</a></div>`}}
+async function init(){try{const res=await fetch('/programme/',{cache:'no-store'});if(!res.ok)throw new Error(`HTTP ${res.status}`);DATA=[...extractData(await res.text()),...EXTRA_RESOURCES];addOptions(level,[...new Set(DATA.map(x=>x.level))]);addOptions(type,[...new Set(DATA.map(x=>x.type))]);addOptions(source,[...new Set(DATA.map(x=>x.source))]);readParams();[q,level,type,source].forEach(el=>el.addEventListener(el===q?'input':'change',()=>{syncUrl();render()}));$('reset').onclick=()=>{q.value='';level.value='';type.value='';source.value='';syncUrl();render();q.focus()};document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{q.value=b.dataset.q;syncUrl();render()});render()}catch(err){DATA=[...EXTRA_RESOURCES];addOptions(level,[...new Set(DATA.map(x=>x.level))]);addOptions(type,[...new Set(DATA.map(x=>x.type))]);addOptions(source,[...new Set(DATA.map(x=>x.source))]);readParams();render();count.textContent=`${DATA.length} nouveautés locales disponibles — corpus principal temporairement indisponible`}}
 init();
 })();
